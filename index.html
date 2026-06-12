@@ -106,13 +106,29 @@ function endGame(){
 }
 
 document.getElementById('jump').onclick=()=>{if(y<=91)vy=16;}
-for(const [id,varn] of [['left','left'],['right','right']]){
- let b=document.getElementById(id);
- b.onmousedown=()=>window[varn]=true;
- b.onmouseup=()=>window[varn]=false;
- b.ontouchstart=(e)=>{e.preventDefault();window[varn]=true;}
- b.ontouchend=()=>window[varn]=false;
-}
+document.getElementById('left').ontouchstart=(e)=>{
+ e.preventDefault();
+ left=true;
+};
+
+document.getElementById('left').ontouchend=()=>{
+ left=false;
+};
+
+document.getElementById('right').ontouchstart=(e)=>{
+ e.preventDefault();
+ right=true;
+};
+
+document.getElementById('right').ontouchend=()=>{
+ right=false;
+};
+
+document.getElementById('left').onmousedown=()=>left=true;
+document.getElementById('left').onmouseup=()=>left=false;
+
+document.getElementById('right').onmousedown=()=>right=true;
+document.getElementById('right').onmouseup=()=>right=false;
 
 function loop(){
  if(left)x-=5;
