@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MyGola ❤️</title>
+<style>
+body{margin:0;overflow:hidden;font-family:Arial;background:linear-gradient(#87ceeb,#dff6ff)}
+#start,#end,#popup{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+#start{z-index:10;background:linear-gradient(#87ceeb,#fff)}
+#end{display:none;z-index:20;background:rgba(0,0,0,.9);color:#fff}
+#popup{display:none;z-index:15;background:rgba(0,0,0,.5);color:#fff;font-size:28px}
+button{padding:12px 20px;border:none;border-radius:12px;font-size:20px}
+#game{display:none;width:100vw;height:100vh;position:relative;overflow:hidden}
+#world{position:absolute;width:2800px;height:100%}
+.cloud{position:absolute;font-size:40px;animation:float 18s linear infinite}
+@keyframes float{from{transform:translateX(-100px)}to{transform:translateX(3000px)}}
+.ground{position:absolute;bottom:0;left:0;width:2800px;height:90px;background:#3cb371}
+.platform{position:absolute;height:18px;background:#8b5a2b}
+#player,.heart,.castle{position:absolute}
+#player{font-size:42px}
+.heart{font-size:36px}
+.castle{font-size:55px}
+#counter{position:fixed;top:10px;left:10px;background:#fff;padding:8px 12px;border-radius:10px}
+.controls{position:fixed;bottom:10px;width:100%;text-align:center}
+.controls button{width:80px;height:60px}
+.confetti{position:fixed;font-size:28px;animation:fall 4s linear infinite}
+@keyframes fall{from{transform:translateY(-100px)}to{transform:translateY(120vh)}}
+</style>
+</head>
+<body>
+
+<div id="start">
+<h1>❤️ MyGola ❤️</h1>
+<p>A little adventure made just for Gola</p>
+<button onclick="startGame()">Start Adventure ❤️</button>
+</div>
+
+<div id="counter">❤️ 0 / 3</div>
+
+<div id="game">
+<div id="world">
+
+<div class="cloud" style="top:50px">☁️ ☁️ ☁️</div>
+<div class="cloud" style="top:140px;animation-duration:25s">☁️ ☁️</div>
+
+<div class="ground"></div>
+
+<div class="platform" style="left:450px;bottom:180px;width:150px"></div>
+<div class="platform" style="left:950px;bottom:250px;width:150px"></div>
+<div class="platform" style="left:1450px;bottom:180px;width:150px"></div>
+
+<div class="heart" data-msg="Every good thing started with you ❤️" style="left:510px;bottom:220px">❤️</div>
+<div class="heart" data-msg="You make ordinary days feel special ❤️" style="left:1010px;bottom:290px">❤️</div>
+<div class="heart" data-msg="My favorite place is wherever you are ❤️" style="left:1510px;bottom:220px">❤️</div>
+
+<div class="castle" style="left:2450px;bottom:90px">🏰❤️</div>
+<div id="player">🧑</div>
+</div>
+
+<div class="controls">
+<button id="left">⬅️</button>
+<button id="jump">⬆️</button>
+<button id="right">➡️</button>
+</div>
+</div>
+
+<div id="popup"></div>
+
+<div id="end">
+<h1>❤️ I LOVE YOU GOLA ❤️</h1>
+<p>You reached the end of this little adventure,<br>but never the end of my love.</p>
+<h2>Forever & Always</h2>
+<h3>— Rakshak ❤️</h3>
+<div id="confettiBox"></div>
+</div>
+
+<script>
+let x=50,y=90,vy=0,left=false,right=false,score=0;
+const player=document.getElementById('player');
+const world=document.getElementById('world');
+const hearts=[...document.querySelectorAll('.heart')];
+
+function startGame(){
+ document.getElementById('start').style.display='none';
+ document.getElementById('game').style.display='block';
+ loop();
+}
+function msg(t){
+ let p=document.getElementById('popup');
+ p.innerHTML='<div>'+t+'</div>';
+ p.style.display='flex';
+ setTimeout(()=>p.style.display='none',2200);
+}
+function endGame(){
+ document.getElementById('end').style.display='flex';
+ let box=document.getElementById('confettiBox');
+ for(let i=0;i<30;i++){
+  let d=document.createElement('div');
+  d.className='confetti';
+  d.style.left=Math.random()*100+'vw';
+  d.style.animationDelay=(Math.random()*3)+'s';
+  d.innerHTML='❤️';
+  box.appendChild(d);
+ }
+}
+
+document.getElementById('jump').onclick=()=>{if(y<=91)vy=16;}
+for(const [id,varn] of [['left','left'],['right','right']]){
+ let b=document.getElementById(id);
+ b.onmousedown=()=>window[varn]=true;
+ b.onmouseup=()=>window[varn]=false;
+ b.ontouchstart=(e)=>{e.preventDefault();window[varn]=true;}
+ b.ontouchend=()=>window[varn]=false;
+}
+
+function loop(){
+ if(left)x-=5;
+ if(right)x+=5;
+
+ vy-=0.8; y+=vy;
+ if(y<90){y=90;vy=0;}
+
+ player.style.left=x+'px';
+ player.style.bottom=y+'px';
+
+ let cam=Math.max(0,Math.min(x-200,1700));
+ world.style.transform='translateX('+-cam+'px)';
+
+ hearts.forEach(h=>{
+  if(h.style.display==='none')return;
+  let hx=parseInt(h.style.left), hy=parseInt(h.style.bottom);
+  if(Math.abs(x-hx)<45 && Math.abs(y-hy)<55){
+   h.style.display='none';
+   score++;
+   document.getElementById('counter').innerHTML='❤️ '+score+' / 3';
+   msg(h.dataset.msg);
+  }
+ });
+
+ if(x>2380 && score===3) endGame();
+ requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>
